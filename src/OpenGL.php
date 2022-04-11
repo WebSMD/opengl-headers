@@ -63,6 +63,21 @@ class OpenGL implements HeaderInterface
         $pre->add('stdint.h', '');
         $pre->add('inttypes.h', '');
 
+        $pre->define('KHRONOS_STATIC', '1');
+
+        if (\PHP_INT_SIZE === 8) {
+            $pre->define('KHRONOS_SUPPORT_INT64', '1');
+        }
+
+        $pre->define('KHRONOS_SUPPORT_FLOAT', '1');
+
+        if (\PHP_OS_FAMILY === 'Windows') {
+            $pre->define('_WIN32', '1');
+            if (\PHP_INT_SIZE === 8) {
+                $pre->define('_WIN64', '1');
+            }
+        }
+
         $pre->include(self::HEADERS_DIRECTORY);
         $pre->include(self::HEADERS_DIRECTORY . '/platform');
 
