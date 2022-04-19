@@ -22,6 +22,7 @@ typedef void *LPVOID;
 typedef PVOID PROC;
 typedef PVOID HANDLE;
 typedef HANDLE HDC;
+typedef HANDLE HENHMETAFILE;
 typedef unsigned short USHORT;
 typedef short SHORT;
 typedef unsigned int UINT;
@@ -76,6 +77,35 @@ typedef struct tagLAYERPLANEDESCRIPTOR {
   BYTE     bReserved;
   COLORREF crTransparent;
 } LAYERPLANEDESCRIPTOR, *PLAYERPLANEDESCRIPTOR, *LPLAYERPLANEDESCRIPTOR;
+
+typedef struct tagPIXELFORMATDESCRIPTOR {
+  WORD  nSize;
+  WORD  nVersion;
+  DWORD dwFlags;
+  BYTE  iPixelType;
+  BYTE  cColorBits;
+  BYTE  cRedBits;
+  BYTE  cRedShift;
+  BYTE  cGreenBits;
+  BYTE  cGreenShift;
+  BYTE  cBlueBits;
+  BYTE  cBlueShift;
+  BYTE  cAlphaBits;
+  BYTE  cAlphaShift;
+  BYTE  cAccumBits;
+  BYTE  cAccumRedBits;
+  BYTE  cAccumGreenBits;
+  BYTE  cAccumBlueBits;
+  BYTE  cAccumAlphaBits;
+  BYTE  cDepthBits;
+  BYTE  cStencilBits;
+  BYTE  cAuxBuffers;
+  BYTE  iLayerType;
+  BYTE  bReserved;
+  DWORD dwLayerMask;
+  DWORD dwVisibleMask;
+  DWORD dwDamageMask;
+} PIXELFORMATDESCRIPTOR, *PPIXELFORMATDESCRIPTOR, *LPPIXELFORMATDESCRIPTOR;
 
 typedef struct tagRECT {
   LONG left;
