@@ -16,8 +16,11 @@ use FFI\Contracts\Headers\VersionInterface;
 use FFI\Contracts\Preprocessor\Exception\DirectiveDefinitionExceptionInterface;
 use FFI\Contracts\Preprocessor\Exception\PreprocessorExceptionInterface;
 use FFI\Contracts\Preprocessor\PreprocessorInterface;
+use FFI\Headers\OpenGL\Extension;
+use FFI\Headers\OpenGL\ExtensionInterface;
 use FFI\Headers\OpenGL\Platform;
 use FFI\Headers\OpenGL\Version;
+use FFI\Preprocessor\Option;
 use FFI\Preprocessor\Preprocessor;
 
 class OpenGL implements HeaderInterface
@@ -48,57 +51,53 @@ class OpenGL implements HeaderInterface
     /**
      * @param bool $coreProfile
      * @param Platform|null $platform
+     * @param array<ExtensionInterface> $extensions
      * @param VersionInterface|non-empty-string $version
      * @param PreprocessorInterface $pre
      * @return self
      * @throws DirectiveDefinitionExceptionInterface
      */
     public static function create(
+        bool $coreProfile = true,
         Platform $platform = null,
+        array $extensions = [],
         VersionInterface|string $version = Version::LATEST,
         PreprocessorInterface $pre = new Preprocessor(),
     ): self {
+        if (!$version instanceof VersionInterface) {
+            $version = Version::create($version);
+        }
+
         $pre = clone $pre;
 
+        $pre->add('GL/gl.h', '');
         $pre->add('stdint.h', '');
         $pre->add('inttypes.h', '');
-
-        $pre->define('KHRONOS_STATIC', '1');
-
-        if (\PHP_INT_SIZE === 8) {
-            $pre->define('KHRONOS_SUPPORT_INT64', '1');
-        }
-
-        $pre->define('KHRONOS_SUPPORT_FLOAT', '1');
-
-        if (\PHP_OS_FAMILY === 'Windows') {
-            $pre->define('_WIN32', '1');
-            if (\PHP_INT_SIZE === 8) {
-                $pre->define('_WIN64', '1');
-            }
-        }
 
         $pre->include(self::HEADERS_DIRECTORY);
         $pre->include(self::HEADERS_DIRECTORY . '/platform');
 
-        switch ($platform) {
-            case Platform::GLX:
-                $pre->define('GL_INCLUDE_GLX', '1');
-                break;
-            case Platform::WGL:
-                $pre->define('GL_INCLUDE_WGL', '1');
-                break;
+        $pre->define('GL_CORE_PROFILE', (int)$coreProfile);
+
+        if ($platform === Platform::GLX) {
+            $pre->define('GL_INCLUDE_GLX', '1');
         }
 
-        if (!$version instanceof VersionInterface) {
-            $version = Version::create($version);
+        if ($platform === Platform::WGL) {
+            $pre->define('GL_INCLUDE_WGL', '1');
         }
 
         foreach (Version::cases() as $case) {
             if ($version->lt($case)) {
                 $name = \str_replace('.', '_', $version->toString());
-
                 $pre->define('GL_VERSION_' . $name, '1');
+            }
+        }
+
+        $excluded = \array_map(Extension::toString(...), $extensions);
+        foreach (Extension::cases() as $case) {
+            if (!\in_array($case->getName(), $excluded, true)) {
+                $pre->define($case->getName(), '1');
             }
         }
 
@@ -112,6 +111,8 @@ class OpenGL implements HeaderInterface
      */
     public function __toString(): string
     {
-        return $this->pre->process(new \SplFileInfo($this->getHeaderPathname())) . \PHP_EOL;
+        $options = Option::KEEP_DEBUG_COMMENTS;
+
+        return $this->pre->process(new \SplFileInfo($this->getHeaderPathname()), $options) . \PHP_EOL;
     }
 }

@@ -30,6 +30,7 @@
     },
     "require-dev": {
         "ffi-headers/testing": "^1.0",
+        "symfony/var-dumper": "^5.4|^6.0",
         "vimeo/psalm": "^4.22"
     },
     "autoload-dev": {

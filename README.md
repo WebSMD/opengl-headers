@@ -34,5 +34,16 @@ $ composer require ffi-headers/opengl-headers
 ## Usage
 
 ```php
-// TODO
+use FFI\Headers\OpenGL;
+use FFI\Headers\OpenGL\Extension;
+
+$gl = OpenGL::create(
+    coreProfile: false,                 // Core Profile vs Compat
+    platform: OpenGL\Platform::GLX,     // GLX (Unix/Linux) or WGL (Windows) 
+    extensions: [                       // List of additional extensions
+        Extension::GL_EXT_TEXTURE_COMPRESSION_DXT1,
+    ],
+);
+
+echo $gl;
 ```

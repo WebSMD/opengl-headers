@@ -12,14 +12,28 @@
 
 #include <GL/glcorearb.h>
 
-#ifdef GL_INCLUDE_GLX
-    #include <glx.h>
-    #include <GL/glxext.h>
+#include "prototypes/gl10.h"
+#include "prototypes/gl11.h"
 
-    __GLXextFuncPtr glXGetProcAddress (const GLubyte *procName);
+#if !GL_CORE_PROFILE
+    #include <GL/glext.h>
+#endif
+
+#ifdef GL_INCLUDE_GLX
+    #include "prototypes/glx.h"
+
+    #if !GL_CORE_PROFILE
+        #include <GL/glxext.h>
+    #endif
 #endif
 
 #ifdef GL_INCLUDE_WGL
-    #include <wgl.h>
-    #include <GL/wglext.h>
+    #include <windows.h>
+    #include <GL/wgl.h>
+
+    #if !GL_CORE_PROFILE
+        #include <GL/wglext.h>
+    #endif
+
+    #include "prototypes/wgl10.h"
 #endif
