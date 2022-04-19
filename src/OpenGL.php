@@ -111,8 +111,6 @@ class OpenGL implements HeaderInterface
      */
     public function __toString(): string
     {
-        $options = Option::KEEP_DEBUG_COMMENTS;
-
-        return $this->pre->process(new \SplFileInfo($this->getHeaderPathname()), $options) . \PHP_EOL;
+        return $this->pre->process(new \SplFileInfo($this->getHeaderPathname())) . \PHP_EOL;
     }
 }
